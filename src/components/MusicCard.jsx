@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '../pages/Loading';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 export default class MusicCard extends Component {
   state = {
     loading: false,
     checked: false,
   };
+
+  async componentDidMount() {
+    const { trackName } = this.props;
+    const favMusics = await getFavoriteSongs();
+    const fav = favMusics.filter((info) => info.trackName === trackName);
+    if (fav.length > 0) {
+      this.setState({ checked: true });
+    }
+  }
 
   favSong = async ({ target }) => {
     this.setState({
@@ -52,6 +61,7 @@ export default class MusicCard extends Component {
             name="check"
             id="check"
             onChange={ this.favSong }
+            checked={ checked }
           />
         </label>
         { loading && <Loading /> }
